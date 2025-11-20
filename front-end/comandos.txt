@@ -1,0 +1,5 @@
+npm create vite@latest .
+npm install -D tailwindcss@npm:@tailwindcss/cli postcss autoprefixer
+
+
+npm run dev  || RODAR PROJETO
