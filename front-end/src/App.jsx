@@ -33,6 +33,10 @@ function Home(){
     .catch(err => {
       setErro(true),
       setCarregando(false)
+
+      if (err.message === "Failed to fetch"){
+        setErro(True)
+      }
     })
   }, [atualizar]);
 
@@ -61,6 +65,10 @@ function Home(){
     .catch(err => {
       console.log(err.message),
       alert("Não foi possível adicionar a tarefa")
+
+      if (err.message === "Failed to fetch"){
+        setErro(True)
+      }
     })
   }
 
@@ -79,6 +87,10 @@ function Home(){
     .catch(err => {
       console.log(err.message),
       alert(err.message)
+
+      if (err.message === "Failed to fetch"){
+        setErro(True)
+      }
     })
   }
   
@@ -101,25 +113,34 @@ function Home(){
   // Tela da HOME
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
-      <span>LISTA DE TAREFAS</span>
+      <span>TAREFAS</span>
 
-      <form className="flex flex-col items-center gap-2" onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
+      <form className="flex flex-col items-center gap-1 p-2" onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
         
-        {lista.length === 0 ? (
-            <span>Não há tarefas cadastradas</span>
-        ): (
-          lista.length > 0 && lista.map((item) => (
-          <div key={item.id}>
-            <button type="button" onClick={() => apagarTarefa(item.id)}>{ item.descricao } </button>
-            <button type="button" onClick={() => {
-              const antigoTexto = item.descricao
-              const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
-            }}>✏️</button>
-          </div>
-        )))}
+        <div className="p-2">
+          {lista.length === 0 ? (
+              <span>Não há tarefas cadastradas</span>
+          ): (
+            lista.length > 0 && lista.map((item) => (
+            <div key={item.id}>
+              
+              <button className="py-2 px-2" type="button" onClick={() => {
+                const antigoTexto = item.descricao
+                const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
+              }}> 🖉 
+              </button>
 
+              <button type="button" onClick={() => apagarTarefa(item.id)}> 
+                { item.descricao } 
+              </button>
+
+            </div>
+          )))}
+        </div>
+
+        
       
-        <input className="border border-gray-400 rounded p-2 w-64 text-center" value={texto} onChange={atualizarTexto}/>
+        <input className="border border-gray-400 rounded p-2 w-68 text-center" value=       {texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
         <button type="submit"/>
       </form>
     </div>

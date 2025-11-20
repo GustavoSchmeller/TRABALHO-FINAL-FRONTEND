@@ -83,7 +83,7 @@ app.delete("/tarefas/:id", validarPessoa, async (req,res)=>{
     return res.status(200).json({message:"Usuário excluido com sucesso!"})
 })
 
-app.put()
+//app.put()
 
 app.use((req,res,next)=>{
     res.status(404).json({
