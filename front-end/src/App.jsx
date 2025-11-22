@@ -2,14 +2,93 @@ import { useEffect, useState } from "react";
 import './output.css'
 
 export default function App() {
-  return <Home/>
+  const [logado, setLogado] = useState(false)
+
+  return logado ? <Home setLogado={setLogado} /> : <Login setLogado={setLogado}/>
 }
 
-//function Login(){}
-//function Logout(){}
+function Login({ setLogado }){
 
-function Home(){
-  
+  const [CarregandoLogin, setCarregandoLogin] = useState(false)
+  const [erro, setErro] = useState(false)
+  const [nome, setNome] = useState("")
+  const [senha, setSenha] = useState("")
+
+  function atualizarNome(evento){
+    setNome(evento.target.value)
+  }
+  function atualizarSenha(evento){
+    setSenha(evento.target.value)
+  }
+
+  function validarLogin(){
+
+    if(nome.length  > 0 && senha.length > 0){
+      setCarregandoLogin(true)
+      fetch("http://localhost:8000/login", {
+        method:"POST",
+        headers: {"Content-type":"application/json"},
+        body: JSON.stringify({nome:nome,senha:senha}),
+        credentials:"include"
+      })
+      .then(async respostaServidor => {
+        const dados = await respostaServidor.json()
+        if(!respostaServidor.ok) throw new Error(dados.message)
+        return dados
+      })
+      .then(res => {
+        setLogado(true)
+        setCarregandoLogin(false)
+      })
+      .catch (err => {
+        setCarregandoLogin(false)
+        if (err.message === "Failed to fetch"){
+          setErro(true)
+        } else {
+          window.alert(err.message)
+        }
+      })
+    } else {
+      window.alert("Você precisa preencher todos campos")
+    }
+  }
+
+  // Tela de loading
+  if(CarregandoLogin){
+    return(
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
+      <h3>Login sendo feito...</h3>
+    </div>
+    )}
+
+  // Tela de erro
+  if(erro){
+    return(
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
+      <h3>Erro interno no servidor</h3>
+    </div>
+    )}
+
+  return (
+    <div className="flex flex-col justify-center items-center">
+      <form onSubmit={(e) => {e.preventDefault(),validarLogin()}}>
+        <div className="flex flex-col justify-center items-center">
+          <span>LOGIN</span>
+        </div>
+        <ul>
+          <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="nome" placeholder="Nome" value={nome} onChange={atualizarNome}/></li>
+          <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
+        </ul>
+        <div className="flex justify-center">
+          <button type="submit">ACESSAR</button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+function Home({ setLogado }){
+
   const [atualizar, setAtualizar] = useState(0)
   const [texto, setTexto] = useState("")
   const [lista, setLista] = useState([])
@@ -28,18 +107,20 @@ function Home(){
   // Usado para renderizar a lista no loading da página
   // É atualizado quando o usuário envia uma nova tarefa
   useEffect(() => {
-    fetch("http://localhost:8000/tarefas")
+    fetch("http://localhost:8000/tarefas", {
+      method:"GET",
+      credentials:"include"
+    })
     .then(resposta => resposta.json())
-    .then(respostaJson => {
-      setLista(respostaJson.tarefas || []),
+    .then(respostajson => {
+      setLista(respostajson.tarefas || []),
       setCarregando(false)
       })
     .catch(err => {
       setErro(true),
       setCarregando(false)
-
       if (err.message === "Failed to fetch"){
-        setErro(True)
+        setErro(true)
       }
     })
   }, [atualizar]);
@@ -48,52 +129,53 @@ function Home(){
   function adicionarTarefa(){
     if (texto.trim() == "") return
     setLista([... lista, {descricao:texto+" (...) "}])
-
+    setTexto("")
     fetch("http://localhost:8000/tarefas", {
       method:"POST",
       headers: {
       "Content-Type": "application/json"
       },
-      body: JSON.stringify({descricao:texto})
-
+      body: JSON.stringify({descricao:texto}),
+      credentials:"include"
     })
-    .then(respostaServidor => {
-      if (!respostaServidor.ok) throw new Error("Erro ao adicionar nova tarefa")
-        return respostaServidor.json()
+    .then(async respostaServidor => {
+      const dados = await respostaServidor.json()
+      if (!respostaServidor.ok) throw new Error(dados.message)
+      return dados
     })
-    .then(respostaStatus => {
-      console.log(respostaStatus.message),
+    .then(respostajson => {
+      console.log(respostajson.message)
       atualizarUseEffect(),
       setTexto("")
     })
     .catch(err => {
-      console.log(err.message),
-      alert("Não foi possível adicionar a tarefa")
-
       if (err.message === "Failed to fetch"){
-        setErro(True)
+        setErro(true)
+      } else {
+        window.alert(err.message)
       }
     })
   }
 
   function apagarTarefa(id){
     fetch(`http://localhost:8000/tarefas/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
+      credentials:"include"
     })
-    .then(respostaServidor => {
-      if (!respostaServidor.ok) throw new Error("Erro ao apagar tarefa")
-        return respostaServidor.json()
+    .then(async respostaServidor => {
+      const dados = await respostaServidor.json()
+      if (!respostaServidor.ok) throw new Error(dados.message)
+      return dados
     })
-    .then(respostaServidor => {
-      console.log(respostaServidor.message),
+    .then(respostajson => {
+      console.log(respostajson.message),
       atualizarUseEffect()
     })
     .catch(err => {
-      console.log(err.message),
-      window.alert(err.message)
-
       if (err.message === "Failed to fetch"){
-        setErro(True)
+        setErro(true)
+      } else {
+        window.alert(err.message)
       }
     })
   }
@@ -104,26 +186,49 @@ function Home(){
       headers: {
       "Content-Type": "application/json"
       },
-      body: JSON.stringify({descricao:novoTexto})
+      body: JSON.stringify({descricao:novoTexto}),
+      credentials:"include"
     })
     .then(respostaServidor => {
-      if (!respostaServidor.ok) throw new Error("Erro ao atualizar tarefa")
-        return respostaServidor.json()
+      const dados = respostaServidor.json()
+      if (!respostaServidor.ok) throw new Error(respostaServidor.message)
+      return dados
     })
-    .then(respostaServidor =>{
-      window.alert(respostaServidor.message)
+    .then(() =>{
       atualizarUseEffect()
     })
     .catch(err => {
-      console.log(err.message),
-      window.alert(err.message)
-
       if (err.message === "Failed to fetch"){
-        setErro(True)
+        setErro(true)
+      } else {
+        window.alert(err.message)
       }
     })
   }
   
+  function fazerLogout(){
+    fetch("http://localhost:8000/logout", {
+      method:"GET",
+      credentials:"include"
+    })
+    .then(async respostaServidor => {
+      const dados = await respostaServidor.json()
+      if (!respostaServidor.ok) throw new Error(dados.message)
+      return dados
+    })
+    .then(respostajson =>{
+      window.alert(respostajson.message)
+      setLogado(false)
+    }) 
+    .catch(err => {
+      setLogado(false)
+      if (err.message === "Failed to fetch"){
+        setErro(true)
+      } else {
+        window.alert(err.message)
+      }
+    }) 
+  }
   // Tela de loading
   if(carregando){
     return(
@@ -136,44 +241,52 @@ function Home(){
   if(erro){
     return(
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
-      <h3>Erro ao carregar a página</h3>
+      <h3>Erro interno no servidor</h3>
     </div>
     )}
 
   // Tela da HOME
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
-      <span>TAREFAS</span>
-
-      <form className="flex flex-col items-center gap-1 p-2" onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
-        
-        <div className="p-2">
-          {lista.length === 0 ? (
-              <span>Não há tarefas cadastradas</span>
-          ): (
-            lista.length > 0 && lista.map((item) => (
-            <div key={item.id}>
-              
-              <button className="py-2 px-2" type="button" onClick={() => {
-                const antigoTexto = item.descricao
-                const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
-                atualizarTarefa(item.id,novoTexto)
-              }}> 🖉 
-              </button>
-
-              <button type="button" onClick={() => apagarTarefa(item.id)}> 
-                { item.descricao } 
-              </button>
-
-            </div>
-          )))}
-        </div>
-
-        
+    <div className="min-h-screen flex flex-row justify-center gap-4 p-2">
       
-        <input className="border border-gray-400 rounded p-2 w-68 text-center" value=       {texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
-        <button type="submit"/>
-      </form>
+      
+      <div className="flex justify-center items-center p-2"> 
+        <span className="block">TAREFAS</span>
+      </div>
+
+      <div className="flex items-center gap-2 p-2">
+        <form onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
+            {lista.length === 0 ? (
+                <div className="flex justify-center items-center p-2">
+                  <span>Não há tarefas cadastradas</span>
+                </div>
+            ): (
+              lista.length > 0 && lista.map((item) => (
+              <div key={item.id}>
+                
+                <button className="py-2 px-2" type="button" onClick={() => {
+                  const antigoTexto = item.descricao
+                  const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
+                  atualizarTarefa(item.id,novoTexto)
+                }}> 🖉 
+                </button>
+
+                <button className="" type="button" onClick={() => apagarTarefa(item.id)}> 
+                  { item.descricao } 
+                </button>
+
+              </div>
+            )))}
+          <input className="border border-gray-400 rounded p-2 w-68 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
+          <button type="submit"/>
+        </form>
+      </div>
+
+      <div className="flex justify-center items-center p-2"> 
+        <button onClick={fazerLogout}>LOGOUT</button>
+        
+      </div>
+
     </div>
   );
 }
