@@ -70,17 +70,17 @@ function Login({ setLogado }){
     )}
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="min-h-screen flex flex-col justify-center items-center p-2">
+      <div className="text-2xl font-bold mb-6">
+        <span>LOGIN</span>
+      </div>
       <form onSubmit={(e) => {e.preventDefault(),validarLogin()}}>
-        <div className="flex flex-col justify-center items-center">
-          <span>LOGIN</span>
-        </div>
         <ul>
           <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="nome" placeholder="Nome" value={nome} onChange={atualizarNome}/></li>
           <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
         </ul>
         <div className="flex justify-center">
-          <button type="submit">ACESSAR</button>
+          <button type="submit"/>
         </div>
       </form>
     </div>
@@ -128,7 +128,6 @@ function Home({ setLogado }){
   // Criar uma nova tarefa
   function adicionarTarefa(){
     if (texto.trim() == "") return
-    setLista([... lista, {descricao:texto+" (...) "}])
     setTexto("")
     fetch("http://localhost:8000/tarefas", {
       method:"POST",
@@ -141,6 +140,7 @@ function Home({ setLogado }){
     .then(async respostaServidor => {
       const dados = await respostaServidor.json()
       if (!respostaServidor.ok) throw new Error(dados.message)
+      setLista([... lista, {descricao:texto+" (...) "}])
       return dados
     })
     .then(respostajson => {
@@ -180,7 +180,7 @@ function Home({ setLogado }){
     })
   }
 
-  function atualizarTarefa(id,novoTexto){
+  function atualizarTarefa(id,novoTexto, index){
     fetch(`http://localhost:8000/tarefas/${id}`, {
       method: "PUT",
       headers: {
@@ -192,6 +192,9 @@ function Home({ setLogado }){
     .then(respostaServidor => {
       const dados = respostaServidor.json()
       if (!respostaServidor.ok) throw new Error(respostaServidor.message)
+      const novaLista = [...lista];
+      novaLista[index].descricao = novoTexto + " (...) ";
+      setLista(novaLista);
       return dados
     })
     .then(() =>{
@@ -233,7 +236,7 @@ function Home({ setLogado }){
   if(carregando){
     return(
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
-      <h3>Carregando página</h3>
+      <h3>Carregando página...</h3>
     </div>
     )}
 
@@ -261,13 +264,13 @@ function Home({ setLogado }){
                   <span>Não há tarefas cadastradas</span>
                 </div>
             ): (
-              lista.length > 0 && lista.map((item) => (
+              lista.length > 0 && lista.map((item, index) => (
               <div key={item.id}>
                 
                 <button className="py-2 px-2" type="button" onClick={() => {
                   const antigoTexto = item.descricao
                   const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
-                  atualizarTarefa(item.id,novoTexto)
+                  atualizarTarefa(item.id,novoTexto,index)
                 }}> 🖉 
                 </button>
 
@@ -284,7 +287,6 @@ function Home({ setLogado }){
 
       <div className="flex justify-center items-center p-2"> 
         <button onClick={fazerLogout}>LOGOUT</button>
-        
       </div>
 
     </div>
