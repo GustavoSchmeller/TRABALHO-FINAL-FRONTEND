@@ -176,8 +176,12 @@ function Home({ setLogado }){
     }
   }
 
-  function apagarTarefa(id){
+  function apagarTarefa(id,index){
     try{
+
+      let novaLista = [...lista]
+      novaLista[index].descricao += " (APAGANDO) "
+      setLista(novaLista)
 
       fetch(`http://localhost:8000/tarefas/${id}`, {
         method: "DELETE",
@@ -208,7 +212,7 @@ function Home({ setLogado }){
   function atualizarTarefa(id,novoTexto, index){
     try{
 
-      const novaLista = [...lista]
+      let novaLista = [...lista]
       novaLista[index].descricao = novoTexto + " (...) "
       setLista(novaLista)
 
@@ -291,13 +295,12 @@ function Home({ setLogado }){
   // Tela da HOME
   return (
     <div className="min-h-screen flex flex-row justify-center gap-4 p-2">
-      
-      
+
       <div className="flex justify-center items-center p-2"> 
         <span className="block">TAREFAS</span>
       </div>
-
-      <div className="flex items-center gap-2 p-2">
+      
+      <div className=" flex items-center gap-2 p-2">
         <form onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
             {lista.length === 0 ? (
                 <div className="flex justify-center items-center p-2">
@@ -307,14 +310,14 @@ function Home({ setLogado }){
               lista.length > 0 && lista.map((item, index) => (
               <div key={item.id}>
                 
-                <button className="py-2 px-2" type="button" onClick={() => {
+                <button type="button" onClick={() => {
                   const antigoTexto = item.descricao
                   const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
                   atualizarTarefa(item.id,novoTexto,index)
-                }}> 🖉 
+                }}>🖉
                 </button>
-
-                <button className="" type="button" onClick={() => apagarTarefa(item.id)}> 
+                
+                <button type="button" onClick={() => apagarTarefa(item.id,index)}> 
                   { item.descricao } 
                 </button>
 
