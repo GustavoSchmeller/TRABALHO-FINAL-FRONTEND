@@ -22,34 +22,39 @@ function Login({ setLogado }){
   }
 
   function validarLogin(){
+    try{
 
-    if(nome.length  > 0 && senha.length > 0){
-      setCarregandoLogin(true)
-      fetch("http://localhost:8000/login", {
-        method:"POST",
-        headers: {"Content-type":"application/json"},
-        body: JSON.stringify({nome:nome,senha:senha}),
-        credentials:"include"
-      })
-      .then(async respostaServidor => {
-        const dados = await respostaServidor.json()
-        if(!respostaServidor.ok) throw new Error(dados.message)
-        return dados
-      })
-      .then(res => {
-        setLogado(true)
-        setCarregandoLogin(false)
-      })
-      .catch (err => {
-        setCarregandoLogin(false)
-        if (err.message === "Failed to fetch"){
-          setErro(true)
-        } else {
-          window.alert(err.message)
-        }
-      })
-    } else {
-      window.alert("Você precisa preencher todos campos")
+      if(nome.length  > 0 && senha.length > 0){
+        setCarregandoLogin(true)
+        fetch("http://localhost:8000/login", {
+          method:"POST",
+          headers: {"Content-type":"application/json"},
+          body: JSON.stringify({nome:nome,senha:senha}),
+          credentials:"include"
+        })
+        .then(async respostaServidor => {
+          const dados = await respostaServidor.json()
+          if(!respostaServidor.ok) throw new Error(dados.message)
+          return dados
+        })
+        .then(res => {
+          setLogado(true)
+          setCarregandoLogin(false)
+        })
+        .catch (err => {
+          setCarregandoLogin(false)
+          if (err.message === "Failed to fetch"){
+            setErro(true)
+          } else {
+            window.alert(err.message)
+          }
+        })
+      } else {
+        window.alert("Você precisa preencher todos campos")
+      }
+
+    } catch (err) {
+      window.alert("Houve um erro inesperado. Tente novamente!")
     }
   }
 
@@ -106,132 +111,167 @@ function Home({ setLogado }){
 
   // Usado para renderizar a lista no loading da página
   // É atualizado quando o usuário envia uma nova tarefa
-  useEffect(() => {
-    fetch("http://localhost:8000/tarefas", {
-      method:"GET",
-      credentials:"include"
-    })
-    .then(resposta => resposta.json())
-    .then(respostajson => {
-      setLista(respostajson.tarefas || []),
-      setCarregando(false)
+  try{
+
+    useEffect(() => {
+      fetch("http://localhost:8000/tarefas", {
+        method:"GET",
+        credentials:"include"
       })
-    .catch(err => {
-      setErro(true),
-      setCarregando(false)
-      if (err.message === "Failed to fetch"){
-        setErro(true)
-      }
-    })
-  }, [atualizar]);
+      .then(resposta => resposta.json())
+      .then(respostajson => {
+        setLista(respostajson.tarefas || []),
+        setCarregando(false)
+        })
+      .catch(err => {
+        setErro(true),
+        setCarregando(false)
+        if (err.message === "Failed to fetch"){
+          setErro(true)
+        }
+      })
+    }, [atualizar]);
+
+  } catch (err) {
+    window.alert("Houve um erro inesperado. Tente novamente!")
+  }
+
+
 
   // Criar uma nova tarefa
   function adicionarTarefa(){
-    if (texto.trim() == "") return
-    setTexto("")
-    fetch("http://localhost:8000/tarefas", {
-      method:"POST",
-      headers: {
-      "Content-Type": "application/json"
-      },
-      body: JSON.stringify({descricao:texto}),
-      credentials:"include"
-    })
-    .then(async respostaServidor => {
-      const dados = await respostaServidor.json()
-      if (!respostaServidor.ok) throw new Error(dados.message)
-      setLista([... lista, {descricao:texto+" (...) "}])
-      return dados
-    })
-    .then(respostajson => {
-      console.log(respostajson.message)
-      atualizarUseEffect(),
+    try{
+
+      if (texto.trim() == "") return
       setTexto("")
-    })
-    .catch(err => {
-      if (err.message === "Failed to fetch"){
-        setErro(true)
-      } else {
-        window.alert(err.message)
-      }
-    })
+      fetch("http://localhost:8000/tarefas", {
+        method:"POST",
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({descricao:texto}),
+        credentials:"include"
+      })
+      .then(async respostaServidor => {
+        const dados = await respostaServidor.json()
+        if (!respostaServidor.ok) throw new Error(dados.message)
+        setLista([... lista, {descricao:texto+" (...) "}])
+        return dados
+      })
+      .then(respostajson => {
+        console.log(respostajson.message)
+        atualizarUseEffect(),
+        setTexto("")
+      })
+      .catch(err => {
+        if (err.message === "Failed to fetch"){
+          setErro(true)
+        } else {
+          window.alert(err.message)
+        }
+      })
+
+    } catch (err) {
+      window.alert("Houve um erro inesperado. Tente novamente!")
+    }
   }
 
   function apagarTarefa(id){
-    fetch(`http://localhost:8000/tarefas/${id}`, {
-      method: "DELETE",
-      credentials:"include"
-    })
-    .then(async respostaServidor => {
-      const dados = await respostaServidor.json()
-      if (!respostaServidor.ok) throw new Error(dados.message)
-      return dados
-    })
-    .then(respostajson => {
-      console.log(respostajson.message),
-      atualizarUseEffect()
-    })
-    .catch(err => {
-      if (err.message === "Failed to fetch"){
-        setErro(true)
-      } else {
-        window.alert(err.message)
-      }
-    })
+    try{
+
+      fetch(`http://localhost:8000/tarefas/${id}`, {
+        method: "DELETE",
+        credentials:"include"
+      })
+      .then(async respostaServidor => {
+        const dados = await respostaServidor.json()
+        if (!respostaServidor.ok) throw new Error(dados.message)
+        return dados
+      })
+      .then(respostajson => {
+        console.log(respostajson.message),
+        atualizarUseEffect()
+      })
+      .catch(err => {
+        if (err.message === "Failed to fetch"){
+          setErro(true)
+        } else {
+          window.alert(err.message)
+        }
+      })
+
+    } catch (err) {
+      window.alert("Houve um erro inesperado. Tente novamente!")
+    }
   }
 
   function atualizarTarefa(id,novoTexto, index){
-    fetch(`http://localhost:8000/tarefas/${id}`, {
-      method: "PUT",
-      headers: {
-      "Content-Type": "application/json"
-      },
-      body: JSON.stringify({descricao:novoTexto}),
-      credentials:"include"
+    try{
+
+      const novaLista = [...lista]
+      novaLista[index].descricao = novoTexto + " (...) "
+      setLista(novaLista)
+
+      fetch(`http://localhost:8000/tarefas/${id}`, {
+        method: "PUT",
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({descricao:novoTexto}),
+        credentials:"include"
+      })
+      .then(respostaServidor => {
+        const dados = respostaServidor.json()
+        if (!respostaServidor.ok) throw new Error(respostaServidor.message)
+        return dados
+      })
+      .then(() =>{
+        atualizarUseEffect()
+      })
+      .catch(err => {
+        if (err.message === "Failed to fetch"){
+          setErro(true)
+        } else {
+          window.alert(err.message)
+        }
     })
-    .then(respostaServidor => {
-      const dados = respostaServidor.json()
-      if (!respostaServidor.ok) throw new Error(respostaServidor.message)
-      const novaLista = [...lista];
-      novaLista[index].descricao = novoTexto + " (...) ";
-      setLista(novaLista);
-      return dados
-    })
-    .then(() =>{
-      atualizarUseEffect()
-    })
-    .catch(err => {
-      if (err.message === "Failed to fetch"){
-        setErro(true)
-      } else {
-        window.alert(err.message)
-      }
-    })
+
+    } catch (err) {
+      window.alert("Houve um erro inesperado. Tente novamente!")
+    }  
   }
   
   function fazerLogout(){
-    fetch("http://localhost:8000/logout", {
-      method:"GET",
-      credentials:"include"
-    })
-    .then(async respostaServidor => {
-      const dados = await respostaServidor.json()
-      if (!respostaServidor.ok) throw new Error(dados.message)
-      return dados
-    })
-    .then(respostajson =>{
-      window.alert(respostajson.message)
-      setLogado(false)
-    }) 
-    .catch(err => {
-      setLogado(false)
-      if (err.message === "Failed to fetch"){
-        setErro(true)
-      } else {
-        window.alert(err.message)
-      }
-    }) 
+    try{
+
+      fetch("http://localhost:8000/logout", {
+        method:"GET",
+        credentials:"include"
+      })
+      .then(async respostaServidor => {
+        const dados = await respostaServidor.json()
+        if (!respostaServidor.ok) throw new Error(dados.message)
+        return dados
+      })
+      .then(respostajson =>{
+        window.alert(respostajson.message)
+        setLogado(false)
+      }) 
+      .catch(err => {
+        setLogado(false)
+        if (err.message === "Failed to fetch"){
+          setErro(true)
+        } else {
+          window.alert(err.message)
+        }
+      }) 
+      
+    } catch (err) {
+      window.alert("Houve um erro inesperado. Tente novamente!")
+    } 
   }
+
+
   // Tela de loading
   if(carregando){
     return(
