@@ -15,6 +15,9 @@ app.use(cors({
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
 
+// FAZER MIDDLEWARES PRA VALIDAR OS DADOS NO POST E NO PUT
+// FAZER MIDDLEWARES PRA VALIDAR SE USUÁRIO EXISTE
+
 async function validarPessoa (req,res,next){ 
     try{
 
@@ -83,7 +86,23 @@ app.delete("/tarefas/:id", validarPessoa, async (req,res)=>{
     return res.status(200).json({message:"Usuário excluido com sucesso!"})
 })
 
-//app.put()
+
+app.put("/tarefas/:id", async (req,res)=>{
+    const { id } = req.params;
+    const { descricao } = req.body;
+
+    const { error } = await supabase
+    .from('tarefas')
+    .update({descricao:descricao})
+    .eq('id',id)
+
+    if (error) {
+        return res.status(500).json({message:"Erro ao atualizar tarefa."})
+    }
+    return res.status(200).json({message:"Tarefa atualizada com sucesso!"})
+})
+
+
 
 app.use((req,res,next)=>{
     res.status(404).json({

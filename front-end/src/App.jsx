@@ -21,6 +21,10 @@ function Home(){
     setTexto(evento.target.value)
   }
 
+  function atualizarUseEffect(){
+    setAtualizar(a => a + 1)
+  }
+
   // Usado para renderizar a lista no loading da página
   // É atualizado quando o usuário envia uma nova tarefa
   useEffect(() => {
@@ -43,7 +47,7 @@ function Home(){
   // Criar uma nova tarefa
   function adicionarTarefa(){
     if (texto.trim() == "") return
-    setLista([... lista, {descricao:"Adicionando... '"+texto+"''"}])
+    setLista([... lista, {descricao:texto+" (...) "}])
 
     fetch("http://localhost:8000/tarefas", {
       method:"POST",
@@ -59,7 +63,7 @@ function Home(){
     })
     .then(respostaStatus => {
       console.log(respostaStatus.message),
-      setAtualizar(a => a + 1),
+      atualizarUseEffect(),
       setTexto("")
     })
     .catch(err => {
@@ -74,7 +78,7 @@ function Home(){
 
   function apagarTarefa(id){
     fetch(`http://localhost:8000/tarefas/${id}`, {
-      method: "DELETE",
+      method: "DELETE"
     })
     .then(respostaServidor => {
       if (!respostaServidor.ok) throw new Error("Erro ao apagar tarefa")
@@ -82,11 +86,37 @@ function Home(){
     })
     .then(respostaServidor => {
       console.log(respostaServidor.message),
-      setAtualizar(a => a + 1)
+      atualizarUseEffect()
     })
     .catch(err => {
       console.log(err.message),
-      alert(err.message)
+      window.alert(err.message)
+
+      if (err.message === "Failed to fetch"){
+        setErro(True)
+      }
+    })
+  }
+
+  function atualizarTarefa(id,novoTexto){
+    fetch(`http://localhost:8000/tarefas/${id}`, {
+      method: "PUT",
+      headers: {
+      "Content-Type": "application/json"
+      },
+      body: JSON.stringify({descricao:novoTexto})
+    })
+    .then(respostaServidor => {
+      if (!respostaServidor.ok) throw new Error("Erro ao atualizar tarefa")
+        return respostaServidor.json()
+    })
+    .then(respostaServidor =>{
+      window.alert(respostaServidor.message)
+      atualizarUseEffect()
+    })
+    .catch(err => {
+      console.log(err.message),
+      window.alert(err.message)
 
       if (err.message === "Failed to fetch"){
         setErro(True)
@@ -127,6 +157,7 @@ function Home(){
               <button className="py-2 px-2" type="button" onClick={() => {
                 const antigoTexto = item.descricao
                 const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
+                atualizarTarefa(item.id,novoTexto)
               }}> 🖉 
               </button>
 
