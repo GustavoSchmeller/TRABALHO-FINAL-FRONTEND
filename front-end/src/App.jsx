@@ -314,7 +314,7 @@ function Home({ setLogado }){
                   const antigoTexto = item.descricao
                   const novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
                   atualizarTarefa(item.id,novoTexto,index)
-                }}>🖉
+                }}>📝
                 </button>
                 
                 <button type="button" onClick={() => apagarTarefa(item.id,index)}> 
