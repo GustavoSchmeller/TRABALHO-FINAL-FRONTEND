@@ -4,10 +4,28 @@ import './output.css'
 export default function App() {
   const [logado, setLogado] = useState(false)
 
+  try{
+    fetch("http://localhost:8000/checklogin", {
+      method:"GET",
+      credentials:"include"
+    })
+    .then(respostaServidor => respostaServidor.json())
+    .then(respostajson => {
+      if(respostajson.logado) {
+        setLogado(true)
+      } else {
+        setLogado(false)
+      }
+    })
+  } catch {
+    window.alert("Ocorreu um erro inesperado. Tente novamente mais tarde.")
+  }
+
+
   return logado ? <Home setLogado={setLogado} /> : <Login setLogado={setLogado}/>
 }
 
-function Login({ setLogado }){
+function Login({setLogado}){
 
   const [CarregandoLogin, setCarregandoLogin] = useState(false)
   const [erro, setErro] = useState(false)
@@ -82,7 +100,7 @@ function Login({ setLogado }){
       <form onSubmit={(e) => {e.preventDefault(),validarLogin()}}>
         <ul>
           <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="nome" placeholder="Nome" value={nome} onChange={atualizarNome}/></li>
-          <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
+          <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="password" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
         </ul>
         <div className="flex justify-center">
           <button type="submit"/>
@@ -92,7 +110,7 @@ function Login({ setLogado }){
   )
 }
 
-function Home({ setLogado }){
+function Home({setLogado}){
 
   const [atualizar, setAtualizar] = useState(0)
   const [texto, setTexto] = useState("")
@@ -294,16 +312,16 @@ function Home({ setLogado }){
 
   // Tela da HOME
   return (
-    <div className="min-h-screen flex flex-row justify-center gap-4 p-2">
+    <div className="min-h-screen flex flex-col">
 
-      <div className="flex justify-center items-center p-2"> 
-        <span className="block">TAREFAS</span>
+      <div className="text-3xl font-medium flex justify-center pt-20 pb-20"> 
+        <span>SUAS TAREFAS</span>
       </div>
-      
-      <div className=" flex items-center gap-2 p-2">
+
+      <div className="flex justify-center items-center p-2">
         <form onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
             {lista.length === 0 ? (
-                <div className="flex justify-center items-center p-2">
+                <div className="mt-3">
                   <span>Não há tarefas cadastradas</span>
                 </div>
             ): (
@@ -317,18 +335,22 @@ function Home({ setLogado }){
                 }}>📝
                 </button>
                 
-                <button type="button" onClick={() => apagarTarefa(item.id,index)}> 
+                <button className="rounded border text-left break-words font-medium leading-5 px-4 py-2 w-60 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id,index)}> 
                   { item.descricao } 
                 </button>
 
               </div>
             )))}
-          <input className="border border-gray-400 rounded p-2 w-68 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
-          <button type="submit"/>
+
+          <div className="flex justify-center mt-10">
+            <input className="border border-gray-400 rounded p-2 w-65 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
+            <button type="submit"/>
+          </div>
+
         </form>
       </div>
 
-      <div className="flex justify-center items-center p-2"> 
+      <div className="flex justify-center items-end text-gray-300 hover:text-red-700 mt-4"> 
         <button onClick={fazerLogout}>LOGOUT</button>
       </div>
 

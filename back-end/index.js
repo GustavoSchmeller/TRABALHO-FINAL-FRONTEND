@@ -32,6 +32,21 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 
 // FAZER MIDDLEWARES PRA VALIDAR SE USUÁRIO EXISTE
 
+
+// FUNÇÃO QUE VAI CHECAR O LOGIN PARA O USUÁRIO NÃO PRECISAR REFAZER O LOGIN NAS PAGINAS AO RECARREGAR
+function checklogin(req,res,next){
+    try{
+        if (req.session.data == undefined || req.session.data == null) {
+            return res.status(403).json({logado:false})
+        } else {
+            return res.status(200).json({logado:true})
+        }
+        
+    } catch (err){
+        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+    }
+}
+
 async function validarDescricao(req,res,next){
     try{
 
@@ -98,6 +113,8 @@ function validarLogin(req,res,next){
         return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
     }
 }
+
+app.get("/checklogin", checklogin)
 
 // tirei validarLogin,
 app.post("/login", async (req,res) => {

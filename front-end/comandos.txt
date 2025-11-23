@@ -2,8 +2,7 @@ npm create vite@latest .
 npm install -D tailwindcss@npm:@tailwindcss/cli postcss autoprefixer
 
 
-npm run dev  || RODAR PROJETO
+npm run dev  || RODAR REACT
+npm run tailwind:watch || RODAR TAILWIND (não precisa disso por conta do concurrently)
 
-
-
-tailwindcss  npx tailwindcss -i  ./src/output.css --watch
+npm run tailwind:watch
