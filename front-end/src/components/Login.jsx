@@ -79,11 +79,11 @@ export default function Login({setLogado}){
       </div>
       <form className="mt-40" onSubmit={(e) => {e.preventDefault(),validarLogin()}}>
         <ul>
-          <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="text" name="nome" placeholder="Nome" value={nome} onChange={atualizarNome}/></li>
-          <li><input className="border border-gray-400 rounded p-2 w-68 text-center" type="password" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
+          <li><input className="border border-gray-400 rounded p-2 w-80 text-center" type="text" name="nome" placeholder="Nome" value={nome} onChange={atualizarNome}/></li>
+          <li><input className="border border-gray-400 rounded p-2 w-80 text-center mt-1" type="password" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
         </ul>
         <div className="flex justify-center">
-          <button className="bg-green-500 rounded border font-medium text-gray-700 px-10 py-1 text-white hover:text-black hover:bg-green-200 mt-2" type="submit">Enviar</button>
+          <button className="bg-green-500 rounded border font-medium text-gray-700 px-10 py-1 text-white hover:text-black hover:bg-green-200 mt-5" type="submit">Enviar</button>
         </div>
       </form>
     </div>

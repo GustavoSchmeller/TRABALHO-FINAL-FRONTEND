@@ -226,7 +226,13 @@ export default function Home({setLogado}){
               .map((item, index) => (
               <div key={item.id}>
                 
-                <button className="pr-2" type="button" onClick={() => {
+
+                
+                <button className="rounded border text-left break-words font-medium leading-5 px-3 py-2 w-60 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
+                  { item.descricao } 
+                </button>
+
+                <button className="pl-3" type="button" onClick={() => {
 
                   let antigoTexto = item.descricao
                   let novoTexto = window.prompt("Edite sua tarefa.",antigoTexto)
@@ -236,11 +242,7 @@ export default function Home({setLogado}){
                     atualizarTarefa(item.id,novoTexto)
                   }
                   
-                }}>🖍️
-                </button>
-                
-                <button className="rounded border text-left break-words font-medium leading-5 px-3 py-2 w-60 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
-                  { item.descricao } 
+                }}>🖋️
                 </button>
 
               </div>
@@ -248,10 +250,10 @@ export default function Home({setLogado}){
       </div>
 
       
-      <div className="flex justify-center mt-10 mb-10">
+      <div className="flex justify-center mt-10 mb-20">
           <form className="flex flex-col items-center"  onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
             <input className="border border-gray-400 rounded p-2 w-80 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
-            <button className="bg-green-500 rounded border font-medium text-gray-700 px-10 py-1 text-white hover:text-black hover:bg-green-200 mt-2" type="submit">Enviar</button>
+            <button className="bg-green-500 rounded border font-medium text-gray-700 px-10 py-1 text-white hover:text-black hover:bg-green-200 mt-3" type="submit">Enviar</button>
           </form>
       </div>
 
