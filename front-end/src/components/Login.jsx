@@ -88,7 +88,7 @@ export default function Login({setLogado}){
           <li><input className="border border-gray-400 rounded p-2 w-80 text-center mt-1" type="password" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
         </ul>
         <div className="flex justify-center">
-          <button className="bg-green-500 rounded border font-medium text-gray-700 px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-40 md:mt-5" type="submit">Enviar</button>
+          <button className="bg-green-500 rounded border font-medium px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-40 md:mt-5" type="submit">Enviar</button>
         </div>
       </form>
     </div>
