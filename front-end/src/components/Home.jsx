@@ -228,7 +228,7 @@ export default function Home({setLogado}){
                 
 
                 
-                <button className="rounded border text-left break-words font-medium leading-5 px-3 py-2 w-60 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
+                <button className="rounded border text-left break-words font-medium leading-5 px-3 py-3 w-80 md:w-80 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
                   { item.descricao } 
                 </button>
 
@@ -252,8 +252,8 @@ export default function Home({setLogado}){
       
       <div className="flex justify-center mt-10 mb-20">
           <form className="flex flex-col items-center"  onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
-            <input className="border border-gray-400 rounded p-2 w-80 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
-            <button className="bg-green-500 rounded border font-medium text-gray-700 px-10 py-1 text-white hover:text-black hover:bg-green-200 mt-3" type="submit">Enviar</button>
+            <input className="border border-gray-400 rounded p-2 w-60 md:w-80 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
+            <button className="bg-green-500 rounded border font-medium px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-5 md:mt-3" type="submit">Enviar</button>
           </form>
       </div>
 
