@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import '../output.css'
 
 export default function Login({setLogado}){
@@ -64,7 +64,7 @@ export default function Login({setLogado}){
   // Tela de loading
   if(CarregandoLogin){
     return(
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4">
       <h3>Login sendo feito...</h3>
     </div>
     )}
@@ -72,13 +72,13 @@ export default function Login({setLogado}){
   // Tela de erro
   if(erro){
     return(
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4">
       <h3>Erro interno no servidor</h3>
     </div>
     )}
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-2">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center p-2">
       <div className="text-4xl font-bold mt-40">
         <span>LOGIN</span>
       </div>

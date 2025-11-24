@@ -1,9 +1,16 @@
+
+|| COMANDOS PARA RODAR O PROJETO || 
+
+npm install
+npm run dev 
+
+
+
+
+
+|| COMANDOS DE INICIO DO PROJETO || (NÃO USAR)
+
+
 npm create vite@latest .
 npm install -D tailwindcss@npm:@tailwindcss/cli postcss autoprefixer
-
-
-npm run dev  || RODAR PROJETO
-
-
-
-tailwindcss  npx tailwindcss -i  ./src/output.css --watch
+npm install -D concurrently

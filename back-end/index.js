@@ -222,7 +222,7 @@ app.get("/tarefas", validarAuth, async(req,res)=>{
         if (!data || data.length == 0) {
             return res.status(200).json({message:"Não há tarefas cadastradas."})
         }
-        return res.status(200).json({tarefas:data})
+        return res.status(200).json({tarefas:data,usuario:req.session.data.nome})
 
     } catch (error) {
         return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})

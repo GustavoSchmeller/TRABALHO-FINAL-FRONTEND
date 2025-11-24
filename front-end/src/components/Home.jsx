@@ -4,6 +4,7 @@ import '../output.css'
 export default function Home({setLogado}){
 
   const [atualizar, setAtualizar] = useState(0)
+  const [usuarioNome, setUsuarioNome] = useState("")
   const [texto, setTexto] = useState("")
   const [lista, setLista] = useState([])
   const [erro, setErro] = useState(false)
@@ -30,6 +31,7 @@ export default function Home({setLogado}){
       .then(resposta => resposta.json())
       .then(respostajson => {
         setLista(respostajson.tarefas || []),
+        setUsuarioNome(respostajson.usuario),
         setCarregando(false)
         })
       .catch(err => {
@@ -194,7 +196,7 @@ export default function Home({setLogado}){
   // Tela de loading
   if(carregando){
     return(
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4 p-6">
       <h3>Carregando página...</h3>
     </div>
     )}
@@ -202,18 +204,32 @@ export default function Home({setLogado}){
   // Tela de erro
   if(erro){
     return(
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4 p-6">
       <h3>Erro interno no servidor</h3>
     </div>
     )}
 
   // Tela da HOME
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="bg-gray-100 min-h-screen flex flex-col">
 
-      <div className="text-3xl font-medium flex justify-center pt-20"> 
-        <span>SUAS TAREFAS</span>
+      <div className="bg-gray-400 grid grid-cols-1 md:grid-cols-2 border-b p-1">
+        <div className="justify-center items-center text-center md:text-start md:items-start text-gray-200 ml-0 md:ml-40"> 
+              Olá, {usuarioNome}.
+        </div>
+        <div className="justify-center text-end hidden md:block text-gray-200 hover:text-red-500 hover:font-bold mr-40"> 
+          <button onClick={fazerLogout}>Logout</button>
+        </div>
       </div>
+
+      <div className="flex flex-row pt-20"> 
+        <div className="w-full text-4xl font-medium flex justify-center text-center items-center">
+          <span>SUAS TAREFAS</span>
+        </div>
+
+      </div>
+
+
 
       <div className="mt-30 bg-brown-500 flex flex-col justify-start items-center flex-1 pt-20">
             {lista.length === 0 ? (
@@ -226,9 +242,7 @@ export default function Home({setLogado}){
               .map((item, index) => (
               <div key={item.id}>
                 
-
-                
-                <button className="rounded border text-left break-words font-medium leading-5 px-3 py-3 w-80 md:w-80 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
+                <button className="bg-white border-l-4 mb-1 border-l-gray-500 text-left break-words font-medium leading-5 px-3 py-3 w-80 md:w-80 hover:bg-red-500 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
                   { item.descricao } 
                 </button>
 
@@ -250,15 +264,18 @@ export default function Home({setLogado}){
       </div>
 
       
-      <div className="flex justify-center mt-10 mb-20">
+      <div className="flex flex-col justify-center pt-10 pb-20">
           <form className="flex flex-col items-center"  onSubmit={(e) => {e.preventDefault(),adicionarTarefa()}}>
             <input className="border border-gray-400 rounded p-2 w-60 md:w-80 text-center" value={texto} onChange={atualizarTexto} placeholder="Adicione suas tarefas"/>
-            <button className="bg-green-500 rounded border font-medium px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-5 md:mt-3" type="submit">Enviar</button>
+            <button className="bg-green-500 rounded font-medium px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-5 md:mt-3" type="submit">Enviar</button>
           </form>
       </div>
 
-      <div className="flex justify-center items-end text-gray-400 hover:text-red-400 mb-10"> 
+      <div className="flex justify-center text-gray-400 md:hidden hover:text-red-400 hover:font-bold pb-10"> 
           <button onClick={fazerLogout}>LOGOUT</button>
+      </div>
+      <div className="bg-gray-200 border-t flex-row justify-center text-center hidden md:block text-gray-400">
+        by: Gustavo Medeiros Schmeller
       </div>
 
     </div>
