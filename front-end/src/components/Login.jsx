@@ -3,10 +3,10 @@ import '../output.css'
 
 export default function Login({setLogado}){
 
-  const [CarregandoLogin, setCarregandoLogin] = useState(false)
-  const [erro, setErro] = useState(false)
-  const [nome, setNome] = useState("")
-  const [senha, setSenha] = useState("")
+  const [ CarregandoLogin, setCarregandoLogin ] = useState(false)
+  const [ erro, setErro ] = useState(false)
+  const [ nome, setNome ] = useState("")
+  const [ senha, setSenha ] = useState("")
 
   function atualizarNome(evento){
     setNome(evento.target.value)

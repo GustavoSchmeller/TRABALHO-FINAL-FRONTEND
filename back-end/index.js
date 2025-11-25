@@ -1,3 +1,6 @@
+/**
+ * IMPORT das bibliotecas que serão usadas
+ */
 import express from "express";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
@@ -5,15 +8,30 @@ import { createClient } from "@supabase/supabase-js";
 import cors from "cors";
 import session from "express-session";
 
+/**
+ * IMPORT dos middlewares criados
+ */
+import validarAuth from "./middlewares/validarAuth.js"
+import validarAuthLogin from "./middlewares/validarAuthLogin.js"
+import validarDescricao from "./middlewares/validarDescricao.js"
+import validarSessao from "./middlewares/validarSessao.js"
+import validarTarefa from "./middlewares/validarTarefa.js"
+
 dotenv.config();
 const app = express();
 const port = 8000;
 
+/**
+ * Define quais domínios podem acessar a API.
+ */
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
 }));
 
+/**
+ * Configuração da sessão do usuário
+ */
 app.use(session({
     secret: process.env.SESSION_KEY,
     resave: false,
@@ -24,107 +42,41 @@ app.use(session({
         sameSite: "lax"
 }}))
 
+
+/**
+ * Configuração que converte as requisições em JSON. 
+ */
 app.use(express.json());
 
+
+/**
+ * Cria a conexão com o banco de dados usando as váriveis que estão dentro do .ENV
+ */
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
 
+/**
+ * Rota utilizada pelo REACT para validar a sessão
+ *
+ * Caso o usuário tiver uma sessão ativa, direciona para a tela home.
+ * Caso o usuário não tiver sessão, direciona para a tela de login.
+ */
+app.get("/validarsessao", validarSessao)
 
-// FAZER MIDDLEWARES PRA VALIDAR SE USUÁRIO EXISTE
-
-
-// FUNÇÃO QUE VAI CHECAR O LOGIN PARA O USUÁRIO NÃO PRECISAR REFAZER O LOGIN NAS PAGINAS AO RECARREGAR
-function checklogin(req,res,next){
-    try{
-        if (req.session.data == undefined || req.session.data == null) {
-            return res.status(403).json({logado:false})
-        } else {
-            return res.status(200).json({logado:true})
-        }
-        
-    } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
-    }
-}
-
-async function validarDescricao(req,res,next){
-    try{
-
-        const { descricao } = req.body;
-        if (!descricao || descricao.length == 0){
-            return res.status(500).json({message: "A descrição da tarefa informada é inválida."})
-        } 
-        if (descricao.length <= 3) {
-            return res.status(500).json({message: "A descrição precisa ter mais de 3 caracteres."})
-        } 
-        next()
-
-    } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
-    }
-}
-
-async function validarTarefa(req,res,next){ 
-    try{
-
-        let { id } = req.params 
-        id = Number(id)
-        const { data:selectTarefa,error:selectErro } = await supabase
-        .from('tarefas')
-        .select()
-        .eq('id',id)
-
-        if(isNaN(id) || !Number.isInteger(id)){
-            return res.status(500).json({message: "O parametro informado precisa ser um inteiro"})
-        }
-        if (!selectTarefa || selectTarefa.length === 0) {
-            return res.status(500).json({message: "A tarefa informada não existe."})
-        }
-        if (selectErro) {
-            return res.status(500).json({message: "Houve um erro:", erro: selectErro.message})
-        }
-        next()
-
-    } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
-    }
-}
-
-function validarAuth(req,res,next) {
-    try{
-        if (req.session.data == undefined || req.session.data == null) {
-            return res.status(403).json({message:"Acesso negado! Você precisa estar logado."})
-        }
-        next()
-
-    } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
-    }
-}
-
-function validarLogin(req,res,next){
-     try{
-        if (req.session.data) {
-            return res.status(403).json({message:"Você já está logado!"})
-        }
-        next()
-
-    } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
-    }
-}
-
-app.get("/checklogin", checklogin)
-
-// tirei validarLogin,
-app.post("/login", async (req,res) => {
+/**
+ * Rota para fazer login.
+ * 
+ * Caso o login for válido, é criado a sessão.
+ * Caso o login for inválido, é retornado o erro.
+ */
+app.post("/login", validarAuthLogin, async (req,res) => {
     try{
 
         const { nome,senha } = req.body
 
         const { error,data } = await supabase
         .from('pessoa')
-        .select()
+        .select('*')
         .eq('nome',nome)
         .single()
 
@@ -146,30 +98,41 @@ app.post("/login", async (req,res) => {
         return res.status(200).json({message:"Login efetuado com sucesso!"})
 
     } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 })
 
-
+/**
+ * Rota para fazer logout.
+ * 
+ * Valida se o usuário está realmente logado.
+ * Encerra a sessão no servidor caso o usuário estiver logado e
+ * limpa o cookie do navegador do usuário.
+ */
 app.get("/logout", validarAuth, (req,res,next)=>{
     try{
 
-        // Encerrar sessão na memoria do server
         req.session.destroy(err=>{
             if(err) {
                 return res.status(500).json({message: "Erro ao encerrar a sessão."})
             }
         })
-        // Encerrar sessão no navegador do usuário
         res.clearCookie("connect.sid")
         return res.status(200).json({message: "Sessão encerrada."})
 
     } catch(err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }  
 })
 
-
+/**
+ * Rota para fazer cadastro.
+ * 
+ * Valida se o usuário está logado.
+ * Coleta os dados informados no JSON.
+ * Criptografa a senha.
+ * Salva o usuário no banco de dados.
+ */
 app.post("/cadastro", validarAuth, async (req,res) => {
     try{
 
@@ -186,20 +149,24 @@ app.post("/cadastro", validarAuth, async (req,res) => {
         return res.status(200).json({message:"Usuario cadastrada com sucesso!"})
 
     } catch (err){
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 })
 
-
+/**
+ * Rota para adicionar nova tarefa.
+ * 
+ * Valida se o usuário está autenticado.
+ * Valida a descrição da tarefa.
+ * Cadastra a tarefa.
+ */
 app.post("/tarefas", validarAuth, validarDescricao, async (req,res)=>{
     try{
 
         const { descricao } = req.body;
         const { error } = await supabase 
         .from('tarefas')
-        .insert({ 
-            descricao:descricao
-        })
+        .insert({descricao:descricao})
 
         if (error){
             console.log(error)
@@ -208,10 +175,16 @@ app.post("/tarefas", validarAuth, validarDescricao, async (req,res)=>{
         return res.status(200).json({message:"Tarefa cadastrada com sucesso!"})
 
     } catch (error) {
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 })
 
+/**
+ * Rota para pegar tarefas.
+ * 
+ * Valida se o usuário está autenticado, 
+ * Caso estiver, retorna a lista de tarefas.
+ */
 app.get("/tarefas", validarAuth, async(req,res)=>{
     try{
 
@@ -225,11 +198,18 @@ app.get("/tarefas", validarAuth, async(req,res)=>{
         return res.status(200).json({tarefas:data,usuario:req.session.data.nome})
 
     } catch (error) {
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 })
 
 
+/**
+ * Rota para apagar determinada tarefa.
+ * 
+ * Valida se o usuário está autenticado.
+ * Valida se a tarefa informada é valida.
+ * Exclui a tarefa. 
+ */
 app.delete("/tarefas/:id", validarAuth, validarTarefa, async (req,res)=>{
     try{
 
@@ -246,11 +226,19 @@ app.delete("/tarefas/:id", validarAuth, validarTarefa, async (req,res)=>{
         return res.status(200).json({message:"Usuário excluido com sucesso!"})
 
     } catch (error) {
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 })
 
 
+/**
+ * Rota para atualizar tarefa.
+ * 
+ * Valida a autenticação do usuário.
+ * Valida se o numero da tarefa é valido.
+ * Valida a nova descrição da tarefa.
+ * Atualiza a tarefa.
+ */
 app.put("/tarefas/:id", validarAuth, validarTarefa, validarDescricao, async (req,res)=>{
     try{
 
@@ -267,19 +255,23 @@ app.put("/tarefas/:id", validarAuth, validarTarefa, validarDescricao, async (req
         return res.status(200).json({message:"Tarefa atualizada com sucesso!"})
 
     } catch (error) {
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 })
 
 
-
+/**
+ * Rota utilizada para rotar que não existem.
+ * 
+ * Retorna um erro caso o usuário acessar um rota que não existe.
+ */
 app.use((req,res,next)=>{
     try{
         res.status(404).json({
             message:"Rota não encontrada"
         })
     } catch (error) {
-        return res.status(500).json({message: "Ocorreu um erro inesperado: ", erro: err.message})
+        return res.status(500).json({message: `Ocorreu um erro inesperado: ${err.message}`})
     }
 });
 

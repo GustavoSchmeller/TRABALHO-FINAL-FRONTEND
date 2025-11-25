@@ -113,6 +113,7 @@ export default function Home({setLogado}){
         atualizarUseEffect()
       })
       .catch(err => {
+        atualizarUseEffect()
         if (err.message === "Failed to fetch"){
           setErro(true)
         } else {
@@ -242,7 +243,7 @@ export default function Home({setLogado}){
               .map((item, index) => (
               <div key={item.id}>
                 
-                <button className="bg-white border-l-4 mb-1 border-l-gray-500 text-left break-words font-medium leading-5 px-3 py-3 w-80 md:w-96 hover:bg-red-500 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
+                <button className="bg-white border-l-4 mb-1 border-l-gray-500 text-left break-words font-medium leading-5 px-3 py-3 w-80 md:w-96 hover:bg-red-400 hover:text-white" type="button" onClick={() => apagarTarefa(item.id)}> 
                   {item.descricao} 
                 </button>
 
