@@ -7,3 +7,9 @@ Executar: npm install && node index.js
 
 Acessar /front-end
 Executar: npm install && npm run dev
+
+
+
+
+ACESSAR PÁGINA: http://localhost:5173/
+Usuário de acesso na página de login: Gustavo (Senha: admin)
