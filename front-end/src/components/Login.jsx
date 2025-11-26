@@ -64,7 +64,7 @@ export default function Login({setLogado}){
   // Tela de loading
   if(CarregandoLogin){
     return(
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4 select-none">
       <h3>Login sendo feito...</h3>
     </div>
     )}
@@ -72,23 +72,23 @@ export default function Login({setLogado}){
   // Tela de erro
   if(erro){
     return(
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center gap-4 select-none">
       <h3>Erro interno no servidor</h3>
     </div>
     )}
 
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col items-center p-2">
-      <div className="text-4xl font-bold mt-40">
+      <div className="text-4xl font-bold mt-40 select-none">
         <span>LOGIN</span>
       </div>
-      <form className="mt-40" onSubmit={(e) => {e.preventDefault(),validarLogin()}}>
+      <form className="mt-40 select-none" onSubmit={(e) => {e.preventDefault(),validarLogin()}}>
         <ul>
           <li><input className="border border-gray-400 rounded p-2 w-80 text-center" type="text" name="nome" placeholder="Nome" value={nome} onChange={atualizarNome}/></li>
           <li><input className="border border-gray-400 rounded p-2 w-80 text-center mt-1" type="password" name="senha" placeholder="Senha" value={senha} onChange={atualizarSenha}/></li>
         </ul>
         <div className="flex justify-center">
-          <button className="bg-green-500 rounded border font-medium px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-40 md:mt-5" type="submit">Enviar</button>
+          <button className="bg-green-500 rounded border font-medium px-10 py-3 md:py-1 text-white hover:text-black hover:bg-green-200 mt-40 md:mt-5 select-none" type="submit">Enviar</button>
         </div>
       </form>
     </div>

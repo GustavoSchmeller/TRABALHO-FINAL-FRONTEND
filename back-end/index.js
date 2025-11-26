@@ -2,9 +2,7 @@
  * IMPORT das bibliotecas que serão usadas
  */
 import express from "express";
-import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import { createClient } from "@supabase/supabase-js";
 import cors from "cors";
 import session from "express-session";
 
@@ -16,8 +14,8 @@ import validarAuthLogin from "./middlewares/validarAuthLogin.js"
 import validarDescricao from "./middlewares/validarDescricao.js"
 import validarSessao from "./middlewares/validarSessao.js"
 import validarTarefa from "./middlewares/validarTarefa.js"
+import { supabase } from "./controller/supabase.js"
 
-dotenv.config();
 const app = express();
 const port = 8000;
 
@@ -47,12 +45,6 @@ app.use(session({
  * Configuração que converte as requisições em JSON. 
  */
 app.use(express.json());
-
-
-/**
- * Cria a conexão com o banco de dados usando as váriveis que estão dentro do .ENV
- */
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
 
 /**

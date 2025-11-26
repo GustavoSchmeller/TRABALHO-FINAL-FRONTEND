@@ -1,3 +1,5 @@
+import { supabase } from "../controller/supabase.js"
+
 /**
  * Middleware que valida se a tarefa informada existe.
  * 
