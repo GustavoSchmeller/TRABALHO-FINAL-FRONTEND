@@ -1,28 +1,28 @@
-|| rodar o back-end || (Em um terminal)
+|| rodar o back-end
 
 Acessar /back-end
 Executar: npm install && node index.js
 
-|| rodar o front-end || (Em outro terminal)
+|| rodar o front-end
 
 Acessar /front-end
 Executar: npm install && npm run dev
 
-
 ACESSAR PÁGINA: http://localhost:5173/
 Usuário de acesso na página de login: Gustavo (Senha: admin)
 
-
 Preencher .env dentro da pasta back-end com o SUPABASE_URL do seu SUPABASE e também SUPABASE_KEY.
 
-BANCO DE DADOS:
+Banco de Dados (Supabase)
 
-TABELA pessoa
-Coluna id INT8 PRIMARY
-Coluna nome VARCHAR
-Coluna senha VARCHAR
+Tabela: pessoa
+Coluna	Tipo	Atributos
+id	INT8	PRIMARY KEY
+nome	VARCHAR	
+senha	VARCHAR	
 
-TABELA tarefas
-Coluna ID INT8 PRIMARY
-descricao varchar
+Tabela: tarefas
+Coluna	Tipo	Atributos
+id	INT8	PRIMARY KEY
+descricao	VARCHAR
 
